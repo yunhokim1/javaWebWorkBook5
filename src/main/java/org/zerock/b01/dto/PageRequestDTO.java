@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import javax.validation.constraints.Min;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -60,7 +59,8 @@ public class PageRequestDTO {
                 }
 
             }
-            String link = builder.toString();
+            link = builder.toString();
+
         }
         return link;
     }

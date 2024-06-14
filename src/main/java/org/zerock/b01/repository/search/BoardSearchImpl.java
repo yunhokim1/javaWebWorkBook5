@@ -19,7 +19,7 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
 
     @Override
     public Page<Board> search1(Pageable pageable) {
-
+        
         QBoard board = QBoard.board;
 
         JPQLQuery<Board> query = from(board); //select.. from board
