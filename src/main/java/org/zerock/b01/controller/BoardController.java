@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.zerock.b01.domain.QBoard;
 import org.zerock.b01.dto.BoardDTO;
 import org.zerock.b01.dto.PageRequestDTO;
 import org.zerock.b01.dto.PageResponseDTO;
@@ -57,10 +56,40 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
-    @GetMapping("/read")
+    @GetMapping({"/read", "/modify"})
     public void readGet(Long bno, PageRequestDTO pageRequestDTO, Model model) {
         BoardDTO boardDTO = boardService.readOne(bno);
         log.info(String.valueOf(boardDTO));
         model.addAttribute("dto", boardDTO);
+    }
+
+    @PostMapping("/modify")
+    public String modify(PageRequestDTO pageRequestDTO,
+                         @Valid BoardDTO boardDTO,
+                         BindingResult bindingResult,
+                         RedirectAttributes redirectAttributes) {
+
+        log.info("board modify POST...........{}", boardDTO);
+
+        if (bindingResult.hasErrors()) {
+            log.info("has errors..........");
+            String link = pageRequestDTO.getLink();
+            redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+            redirectAttributes.addAttribute("bno", boardDTO.getBno());
+            return "redirect:/board/modify?" + link;
+        }
+
+        boardService.modify(boardDTO);
+        redirectAttributes.addFlashAttribute("result", "modified");
+        redirectAttributes.addAttribute("bno", boardDTO.getBno());
+        return "redirect:/board/read";
+    }
+
+    @PostMapping("/remove")
+    public String remove(Long bno, RedirectAttributes redirectAttributes) {
+        log.info("remove POST..........");
+        boardService.remove(bno);
+        redirectAttributes.addFlashAttribute("result", "removed");
+        return "redirect:/board/list";
     }
 }
