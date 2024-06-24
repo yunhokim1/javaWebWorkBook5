@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -44,6 +45,7 @@ public class BoardController {
 
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/register")
     public void registerGet() {
 
@@ -65,6 +67,7 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping({"/read", "/modify"})
     public void readGet(Long bno, PageRequestDTO pageRequestDTO, Model model) {
         BoardDTO boardDTO = boardService.readOne(bno);
@@ -72,6 +75,7 @@ public class BoardController {
         model.addAttribute("dto", boardDTO);
     }
 
+    @PreAuthorize("principal.username == #boardDTO.writer")
     @PostMapping("/modify")
     public String modify(PageRequestDTO pageRequestDTO,
                          @Valid BoardDTO boardDTO,
@@ -94,6 +98,7 @@ public class BoardController {
         return "redirect:/board/read";
     }
 
+    @PreAuthorize("principal.username == #boardDTO.writer")
     @PostMapping("/remove")
     public String remove(BoardDTO boardDTO, RedirectAttributes redirectAttributes) {
 
